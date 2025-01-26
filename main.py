@@ -1,8 +1,6 @@
 #Crea una aplicación que permita a los usuarios gestionar una biblioteca de libros.
 
-#Branch experiment
-#El error es que al agregar la lista con el libro adentro en el JSON, solo se agrega uno porque el archivo se sobreescribe.
-#No puedo tener mas de 2 libros
+#voy a crear otra branch por que quiero hacer experimentos con la implementacion de usuarios
 
 
 import json
