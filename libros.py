@@ -1,5 +1,5 @@
 from validate import validate_input as validate
-import json
+
 
 
 class Libro:
@@ -20,63 +20,47 @@ class Libro:
         return libro
 
 class Biblioteca:
-    def __init__(self):
+    def __init__(self,libros_disponibles):
         self.nombre = "Biblioteca Nacional"
-        self.libros_disponibles = []
+        self.libros_disponibles = libros_disponibles #esta esperando una lista
         self.usuarios = []
         self.prestamos = []
 
-    def agregar_libro(self, libro): #espera un objeto
-        self.libros_disponibles.append(libro)
-        return self.libros_disponibles
-        
-        
-    def eliminar_libro(self,libro):
+    def eliminar_libro(self,titulo_libro,ano_libro): #string
         #preguntar
         libro_eliminado = False
         for libro_a_eliminar in self.libros_disponibles:
-            if libro_a_eliminar["titulo"] == libro["titulo"]:
+            if libro_a_eliminar["titulo"] == titulo_libro and libro_a_eliminar["ano de publicacion"] == ano_libro:
                 print("El libro se elimino correctamente")
                 self.libros_disponibles.remove(libro_a_eliminar)
                 libro_eliminado = True
                 break
         if not libro_eliminado:
-            print(f"El libro {libro["titulo"]} no se encuentra en la biblioteca.")
+            print(f"El libro {titulo_libro} no se encuentra en la biblioteca.")
             user_choice = validate("Quiere eliminar otro libro? (S/N): ",["S","N"])
             if user_choice == "N":
                 print("Thank you for using my program")
                 exit()
             elif user_choice == "S":
-                self.eliminar_libro(libro)
+                self.eliminar_libro(titulo_libro)
 
-    def mostrar_informacion_libro(self,libro):
-        libro_encontrado = False
-        for libro_disponible in self.libros_disponibles:
-            if libro_disponible["titulo"] == libro["titulo"]:
-                libro_encontrado = True
-                print(f"""
-                        Titulo: {libro_disponible["titulo"]}
-                        Autor: {libro_disponible["autor"]}
-                        Ano de Publicacion: {libro_disponible["ano de publicacion"]}
-                        Genero: {libro_disponible["genero"]}
+
+    def mostrar_informacion_libro(self,libros_filtrados): #lista
+        for libro in libros_filtrados:
+            print(f"""
+                        Titulo: {libro["titulo"]}
+                        Autor: {libro["autor"]}
+                        Ano de Publicacion: {libro["ano de publicacion"]}
+                        Genero: {libro["genero"]}
                         \n""")
-                break
-
-        if not libro_encontrado:
-            print(f"El libro {libro['titulo']} no se encuentra en la biblioteca.")
-            user_choice = validate("Quiere ver la informacion de otro libro? (S/N): ", ["S", "N"])
-            if user_choice == "N":
-                print("Thank you for using my program")
-                exit()
-            elif user_choice == "S":
-                self.mostrar_informacion_libro(libro)
+    
 
     def mostrar_libros_disponibles(self):
         titulos_libros = list(map(lambda x: x["titulo"],self.libros_disponibles))
         if titulos_libros:
             print("Los libros disponibles son: ")
             for libro in titulos_libros:
-                print(libro)
+                print(f"-{libro}")
         else:
             print("No hay ningun libro en la biblioteca")
             
@@ -84,8 +68,7 @@ class Biblioteca:
     def filtrar_todo(self,propiedad_libro,propiedad_a_filtrar): #propiedad_libro = genero, propiedad_a_filtrar = horror
         new_list = list(filter(lambda x: x[propiedad_libro] == propiedad_a_filtrar,self.libros_disponibles))
         if new_list:
-            for libro in new_list:
-                self.mostrar_informacion_libro(libro)
+            self.mostrar_informacion_libro(new_list) #esto tiene que ser un string
         else:
             print(f"No hay ningún libro con {propiedad_libro}: {propiedad_a_filtrar} en la biblioteca")
             user_choice = validate("Quiere usar otro filtro? (S/N): ",["S","N"])
@@ -93,7 +76,9 @@ class Biblioteca:
                 print("Thank you for using my program")
                 exit()
             elif user_choice == "S":
-                self.filtrar_todo(propiedad_libro,propiedad_a_filtrar)
+                propiedad_libro = input("Decime que propiedad parametro queres usar para el filtro? (Por ejemplo, titulo): ").lower()
+                propiedad_a_filtrar = input(f"Decime el {propiedad_libro} a filtrar: ").title()
+                self.filtrar_todo(propiedad_libro,propiedad_a_filtrar) 
 
     def filtrar_por_genero(self,genero):
         self.filtrar_todo("genero",genero)

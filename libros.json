@@ -1,8 +1,22 @@
-[
-    {
-        "titulo": "Hola",
-        "autor": "Hola",
-        "ano de publicacion": "2020",
-        "genero": "Horro"
-    }
-]
+{
+    "libreria": [
+        {
+            "titulo": "Harry",
+            "autor": "Marie",
+            "ano de publicacion": "2002",
+            "genero": "Fantasia"
+        },
+        {
+            "titulo": "Spiderman",
+            "autor": "Stan",
+            "ano de publicacion": "1990",
+            "genero": "Super"
+        },
+        {
+            "titulo": "Harry",
+            "autor": "Stan",
+            "ano de publicacion": "2000",
+            "genero": "Fantasia"
+        }
+    ]
+}

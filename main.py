@@ -1,8 +1,8 @@
 #Crea una aplicación que permita a los usuarios gestionar una biblioteca de libros.
 
-#Esta branch tiene algunos errores en cuanto agregar la lista con los libros al archivo JSON
-#Por eso voy a hacer una branch aparte.
-
+#Branch experiment
+#El error es que al agregar la lista con el libro adentro en el JSON, solo se agrega uno porque el archivo se sobreescribe.
+#No puedo tener mas de 2 libros
 
 
 import json
@@ -11,7 +11,7 @@ from validate import validate_input as validate
 
 books_file = "libros.json"
 users_file = "users.json"
-library = Biblioteca()
+
 try:
     with open(books_file, 'r') as file:
         books = json.load(file)
@@ -25,6 +25,10 @@ except Exception as e:
     print(f"An unexpected error occurred while reading the file: {e}")
     books = {}
 
+if "libreria" not in books:
+    books["libreria"] = []
+
+library = Biblioteca(books["libreria"])
 
 def create_books():
     book_title = input("Decime el titulo del libro: ").title()
@@ -39,35 +43,21 @@ def create_books():
 
     return book
 
-#returned_book = create_books()
-
-#def add_book_to_library(book,library):
-    library.agregar_libro(book)
-    return library
-
-#libreria = add_book_to_library(returned_book,library)
-
-#def eliminar(library,book):
-    del_book = input("Decime el nombre del libro que queres eliminar: ").title()
-    if del_book == book["titulo"]:
-        library.eliminar_libro(book)
-        return
-    else:
-        print("No elegiste un libro valido")
-        user_choice = validate("Queres probar de nuevo? (S/N): ",["S","N"])
-        if user_choice == "N":
-            print("Thank you for using my program")
-            exit()
-        elif user_choice == "S":
-            eliminar(library,book)
-
-#eliminar(library,returned_book)
 
 def introduction():
     print("Hello User!\n")
     print("Este es un sistema de biblioteca")
     print("Por ahora, podes interactuar con libros, agregar,eliminar,filtrar,ver sus detalles,etc")
 
+def filter_introduction():
+    print("Decime que filtro queres aplicar: \n")
+    print("""
+        1. Title of the book
+        2. Author of the book
+        3. Year of release of the book
+        4. Gender of the book
+        5. Exit
+            """)
 
 def main():
     introduction()
@@ -77,22 +67,59 @@ def main():
         1. Create a book and Add the book to the library
         2. Delete the book from the library
         3. Show all the books in the library
-        4. Show information about one specific book
-        5. Search a book using a filter
-        6. Exit the program
+        4. Search a book using a filter
+        5. Exit the program
             """)
-    
-    user_choice = validate("Choose one of the available options: ", ["1", "2", "3", "4", "5","6"])
+
+    user_choice = validate("Choose one of the available options: ", ["1", "2", "3", "4", "5"])
 
     if user_choice == "1":
         creating_book = create_books()
-        new_book = library.agregar_libro(creating_book)
+        books["libreria"].append(creating_book)
         try:
             with open(books_file, "w") as file:
-                json.dump(new_book, file, indent=4)
+                json.dump(books, file, indent=4)
         except Exception as e:
             print(f"An unexpected error occurred while writing to the file: {e}")
 
+    elif user_choice == "2":
+        book_to_remove_name = input("Decime el titulo del libro que queres eliminar: ").title()
+        book_to_remove_ano = input("Decime en que año salio el libro que queres eliminar: ")  # Pides la información del libro a eliminar
+        library.eliminar_libro(book_to_remove_name,book_to_remove_ano)
+        books["libreria"] = library.libros_disponibles
+        try:
+            with open(books_file, "w") as file:
+                json.dump(books, file, indent=4)
+        except Exception as e:
+            print(f"An unexpected error occurred while writing to the file: {e}")
+    elif user_choice == "3":
+        library.mostrar_libros_disponibles()
 
+    elif user_choice == "4":
+        filter_introduction()
+        user_choice_filter = validate("Choose one of the available options: ", ["1", "2", "3", "4", "5"])
+
+        if user_choice_filter == "1":
+            book_title = input("Decime el titulo del libro a filtrar: ").title()
+            library.filtrar_por_nombre(book_title)
+
+        elif user_choice_filter == "2":
+            book_author = input("Decime el nombre del autor del libro a filtrar: ").title()
+            library.filtrar_por_autor(book_author)
+        
+        elif user_choice_filter == "3":
+            book_year = input("Decime el año en el que salio el libro a filtrar: ")
+            library.filtrar_por_fecha(book_year)
+
+        elif user_choice_filter == "4":
+            book_gender = input("Decime el genero del libro a filtrar: ").title()
+            library.filtrar_por_genero(book_gender)
+        
+        elif user_choice_filter == "5":
+            print("Thanks for using my program")
+            exit()
+    elif user_choice == "5":
+        print("Thanks for using my program")
+        exit()
 if __name__ == "__main__":
     main()
